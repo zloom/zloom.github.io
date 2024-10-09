@@ -2,9 +2,10 @@
 import { Icon } from "astro-icon/components";
 import ThemeToggle from "../ThemeToggle.astro";
 
-const menuItems = [
+export const menuItems = [
   { name: 'About', href: '/' },
-  { name: 'Blog', href: '/blogs' }
+  { name: 'Blog', href: '/blogs' },
+  { name: 'Contact', href: '/contact' }
 ];
 ---
 
@@ -14,6 +15,7 @@ const menuItems = [
     <div class="text-2xl font-bold">
       <a href="/" class="hover:text-offset">Anton Zalialdinov</a>
     </div>
+    
 
     <div class="flex gap-5">
       <!-- PC Menu -->
