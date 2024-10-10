@@ -3,24 +3,24 @@ import CardListSection from "../../CardListSection.astro";
 
 const experiences = [
   {
-    title: "Senior Software Engineer",
-    sub_title: "Tech Solutions Inc.",
-    years: "2021 - Present",
-    details: "Led the development of a scalable e-commerce platform that increased sales by 30%. Worked with modern technologies including React, Node.js, and AWS."
+    title: "Prisma SQL generator",
+    sub_title: "https://github.com/zloom/prisma-sql-gen",
+    years: "NodeJS, Typescript, Prisma",
+    details: "This tool generates SQL from a Prisma schema file, allowing developers to initialize databases without relying on Prisma's CLI tools. It can be used to set up a database during application startup or for integration testing, making the process faster and more lightweight. By bypassing Prisma's npx commands, it simplifies and accelerates database initialization in various environments."
   },
   {
-    title: "Software Engineer",
-    sub_title: "Innovate Labs",
-    years: "2018 - 2021",
-    details: "Developed and maintained web applications for various clients. Key contributor in migrating legacy systems to cloud infrastructure."
+    title: "Cockroach testcontainer module",
+    sub_title: "https://github.com/zloom/testcontainers-cockroach",
+    years: "Cockroach, Testcontainers, Docker",
+    details: "This library is an extension of Testcontainers, designed to simplify integration testing with CockroachDB. It allows developers to spin up isolated, disposable instances of CockroachDB in Docker containers for testing purposes. Additionally, it includes a feature to spin up a database using an in-memory persistence layer, which improves performance and reduces overhead in testing environments."
   },
   {
     title: "Junior Developer",
-    sub_title: "Creative Apps Studio",
-    years: "2015 - 2018",
-    details: "Worked on mobile app development, collaborating with design teams to create user-friendly applications."
+    sub_title: "https://github.com/zloom/keycloak-external-claim-mapper",
+    years: "Keycloak, Java, OpenID",
+    details: "This Keycloak extension implements an internal SPI protocol mapper that allows fetching remote JSON data via HTTP and incorporating it into user JWT tokens. It extends Keycloak's capabilities by enabling the inclusion of external claims in the token generation process. The mapper is particularly useful for integrating external systems or services that store additional user information."
   }
 ];
 ---
 
-<CardListSection title="Experience" items={experiences} />
+<CardListSection title="Open source contributions" items={experiences} />
