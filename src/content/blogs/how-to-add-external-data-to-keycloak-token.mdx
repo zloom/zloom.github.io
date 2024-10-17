@@ -1,19 +1,31 @@
 ---
-title: "How to add external data to keycloak token?"
-description: "If you have keycloak integrated to your application probbaly you faced situation when you need some data from remote endpoint in user token. For example custom roles."
+title: "How to Add External Data to Keycloak Token"
+description: "If you have Keycloak integrated into your application, you've probably faced a situation where you need some data from a remote endpoint in the user token. For example, custom roles."
 datetime: "2024-09-01"
 image: "/kc_logo.png"
 url: "/blog/how-to-add-external-data-to-keycloak-token"
 ---
 
-# Here is how you can include external data to user JWT in Keycloak
+# How to Add External Data to User JWT in Keycloak
 
-Let's assume you have remote source of data and you want this data to be in user token. In this guide i will mock external api via mockserver. So my exaple will sontain 2 sevices: keycloak and mockserver (external api).
-Keycloak have set of embedded tools to connect external user accounts and data providers. However this tools not always fit external api and requires alot of OpenID protocol details implemented. Simpliest way to get custom data in user token is to use protocol mapper, there set of builtin mappers, but there is no mappers that can call external endpoint. 
-In this guide I'm going to use custom protocol mapper with that function implemented. 
+If you have Keycloak integrated into your application, you’ve probably faced a situation where you need some data from a remote endpoint in the user token, like custom roles. This guide will show you how to include external data in a user JWT using Keycloak.
 
-## Test environment setup
-Lets prepare enviroment for testing mapper. To get keycloak with [keycloak-external-claim-mapper](https://github.com/zloom/keycloak-external-claim-mapper) added im going create Dockerfile with following content:
+Let’s assume you have a remote data source and you want this data included in the user token. In this guide, I will mock an external API using Mockserver. My example will contain two services: Keycloak and Mockserver (external API).
+
+Keycloak has a set of embedded tools to connect external user accounts and data providers. However, these tools don’t always fit external APIs and require a lot of OpenID protocol details to be implemented. The simplest way to get custom data into a user token is to use a protocol mapper. Keycloak has a set of built-in mappers, but there are no mappers that can call external endpoints.
+
+In this guide, I’m going to use a custom protocol mapper with that functionality implemented.
+
+## Steps Overview
+
+1. Set up the environment with Keycloak, Mockserver, and PostgreSQL.
+2. Configure the external claim mapper in Keycloak.
+3. Test the configuration and view the results in the token.
+
+## Test Environment Setup
+
+Let’s prepare the environment for testing the mapper. To get Keycloak with the [keycloak-external-claim-mapper](https://github.com/zloom/keycloak-external-claim-mapper) added, I’m going to create a `Dockerfile` with the following content:
+
 ```docker
 FROM alpine:3.20 as build
 
@@ -28,7 +40,7 @@ FROM quay.io/keycloak/keycloak:25.0.0 as keycloak
 
 COPY --from=build /build /opt/keycloak/providers
 ```
-We need to spin external api mock, keycloak and database so lets use docker compose. Below is docker-compose.yaml content:
+We need to spin up the external API mock, Keycloak, and a database, so let’s use Docker Compose. Below is the content for `docker-compose.yaml`:
 ```docker
 version: "3"
 
@@ -74,7 +86,7 @@ services:
     volumes:
       - ./initializer.json:/mockserver/initializer.json
 ```
-Mockserver requires configuration i will create initializer.json with following mock configuration:
+Mockserver requires configuration, so I will create `initializer.json` with the following mock configuration:
 ```json
 [
   {
@@ -101,27 +113,25 @@ Mockserver requires configuration i will create initializer.json with following 
   }
 ]
 ```
-After creating all this files you should have ready folder with 3 files: dockerfile, docker-compose and initializer.json.
-Switch to this folder and run `docker compose up` wait when all containers started and open http://http://localhost:8080/ in browser you should see keycloak login window.
+After creating all these files, you should have a ready folder with three files: `Dockerfile`, `docker-compose.yaml`, and `initializer.json`. Switch to this folder and run:
 
 ## Keycloak configuration
-Protocol mappers are joined to shareable groupos with client scopes, in fact keycloak client scope is set of jwt mappers. Single scope can be assigned to multiple clients. Also each client have it own scope called `${client-name}-dedicated`.
-Let's configure external-claim-mapper that takes json from mockserver and includes it in user token. 
+Protocol mappers are grouped with client scopes. In fact, a Keycloak client scope is a set of JWT mappers. A single scope can be assigned to multiple clients. Also, each client has its own scope called `${client-name}-dedicated`.
 
-1. Go to http://localhost:8080 login and password `admin`.
-2. Open `clients` on left menu.
-3. Open `account` client, in C`apability config` section set `Direct access grants` checkbox, click save button.
-4. Switch to `Clients scopes` tab and open `account-dedicated`, in `mappers` tab click button `Configure a new mapper`
-5. Select `External claim mapper` set following values: 
+1. Go to http://localhost:8080, and log in with the username and password admin.
+2. Open **Clients** from the left menu.
+3. Open the `account` client, and in the **Capability config** section, check the **Direct access grants** box. Click the save button.
+4. Switch to the **Clients Scopes** tab, open `account-dedicated`, and in the **Mappers** tab, click the **Configure a new mapper** button.
+5. Select **External claim mapper** and set the following values:
     - Name: `test`
     - Remote url: `http://mockserver:8081/userprofile`
-    - Request headers: Key `Content-Type` Value: `application/json`
+    - Request headers: Key `Content-Type`, Value: `application/json`
     - Token Claim Name: `test`
     - Claim JSON Type: `JSON`
-6. Click save button
+6. Click the save button
 
-## Testing
-You can test that mapper sends request to remote endpoint using following curl statement:
+## Testing the Mapper
+You can test that the mapper sends a request to the remote endpoint using the following `curl` statement:
 ```bash
 curl 'http://localhost:8080/realms/master/protocol/openid-connect/token'  \
   -H 'Content-Type: application/x-www-form-urlencoded' \
@@ -130,7 +140,7 @@ curl 'http://localhost:8080/realms/master/protocol/openid-connect/token'  \
   --data-urlencode 'username=admin' \
   --data-urlencode 'password=admin'
 ```
-This request should give you valid token with remote endpoint data:
+This request should give you a valid token with the data from the remote endpoint:
 ```json
 {
    "access_token" : "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJUZGMxRW1mb2c2cm4yYlZ5RGw0al81VjFKMUMtUHBKWWNKVEJISWF2WndNIn0.eyJleHAiOjE3MjkyMDI4NDIsImlhdCI6MTcyOTIwMjc4MiwianRpIjoiZTQ5OTRkNjctMzU0Yi00MzY1LThlYzEtMTQxYzgzZDgzZDBlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9tYXN0ZXIiLCJzdWIiOiI3OWRhZjUxZi0yNjI0LTQxNGEtOWYxMC1hZDA0NDI2ZTk5NWUiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJhY2NvdW50Iiwic2lkIjoiNjdjYzg4MjQtNmI1NC00ZTkwLTliNzctOTFlYWQ5YzVlYmNiIiwiYWNyIjoiMSIsInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInRlc3QiOnsicm9sZXMiOnsidmFsdWVzIjpbInJvbGUxIiwicm9sZTIiLCJyb2xlMyJdfX0sInByZWZlcnJlZF91c2VybmFtZSI6ImFkbWluIn0.Jd-ThcB_QTuXoSaqsLg-Km0wA4XeLOIpni0cCmqJitV43L6hVs2RCDtwucWpXrWf4SeY9P3_YbCzx3vhHNL904cUQDXnhg0lZufhdzUUSnF5vSsjVuOLW9odyAi44dmRhBKI3FQFUGxv2JAoB1iISGCzmpdhFgzOHmmjbgrOuL5pcvQHG6cLNCfkappounDwccPtyTaJmOrEb3yDJzof0gjr7TbfXBcpQUCZn6OifXkzWwbpyKEDjL5eEWQd-0sZFexuFhOQX5d5uOJL0Wx5G8GCBhPsbQipyk5GCf_YaEo353pZ_nAYyvN75mmUMOJILpHUK2Ex55JgCBmi1N7SFg",
