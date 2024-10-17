@@ -1,0 +1,157 @@
+---
+title: "How to add external data to keycloak token?"
+description: "If you have keycloak integrated to your application probbaly you faced situation when you need some data from remote endpoint in user token. For example custom roles."
+datetime: "2024-09-01"
+image: "/kc_logo.png"
+url: "/blog/how-to-add-external-data-to-keycloak-token"
+---
+
+# Here is how you can include external data to user JWT in Keycloak
+
+Let's assume you have remote source of data and you want this data to be in user token. In this guide i will mock external api via mockserver. So my exaple will sontain 2 sevices: keycloak and mockserver (external api).
+Keycloak have set of embedded tools to connect external user accounts and data providers. However this tools not always fit external api and requires alot of OpenID protocol details implemented. Simpliest way to get custom data in user token is to use protocol mapper, there set of builtin mappers, but there is no mappers that can call external endpoint. 
+In this guide I'm going to use custom protocol mapper with that function implemented. 
+
+## Test environment setup
+Lets prepare enviroment for testing mapper. To get keycloak with [keycloak-external-claim-mapper](https://github.com/zloom/keycloak-external-claim-mapper) added im going create Dockerfile with following content:
+```docker
+FROM alpine:3.20 as build
+
+ARG VERSION=0.0.2
+
+RUN \
+  wget https://github.com/zloom/keycloak-external-claim-mapper/releases/download/${VERSION}/external.claim.mapper-${VERSION}.tar.gz;\
+  mkdir -p /providers;\
+  tar -C /providers -zxvf external.claim.mapper-${VERSION}.tar.gz;
+
+FROM quay.io/keycloak/keycloak:25.0.0 as keycloak
+
+COPY --from=build /build /opt/keycloak/providers
+```
+We need to spin external api mock, keycloak and database so lets use docker compose. Below is docker-compose.yaml content:
+```docker
+version: "3"
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14.13
+    environment:
+      POSTGRES_DB: 'keycloak'
+      POSTGRES_USER: 'keycloak'
+      POSTGRES_PASSWORD: 'keycloak'
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+
+  keycloak:
+    container_name: keycloak
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      KEYCLOAK_ADMIN: 'admin'
+      KEYCLOAK_ADMIN_PASSWORD: 'admin'
+      KC_DB: 'postgres'
+      KC_DB_URL: 'jdbc:postgresql://postgres:5432/keycloak'
+      KC_DB_USERNAME: 'keycloak'
+      KC_DB_PASSWORD: 'keycloak'
+    command: start-dev
+    ports:
+      - 8080:8080
+    depends_on: 
+      - postgres   
+
+  mockserver:
+    container_name: mockserver
+    image: mockserver/mockserver:5.15.0
+    environment:
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /mockserver/initializer.json
+      SERVER_PORT: 8081
+    ports:
+      - 8081:8081
+    volumes:
+      - ./initializer.json:/mockserver/initializer.json
+```
+Mockserver requires configuration i will create initializer.json with following mock configuration:
+```json
+[
+  {
+    "httpRequest": {
+      "path": "/userprofile"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "content-type": [
+          "application/json"
+        ]
+      },
+      "body": {
+        "roles": {
+          "values": [
+            "role1",
+            "role2",
+            "role3"
+          ]
+        }
+      }
+    }
+  }
+]
+```
+After creating all this files you should have ready folder with 3 files: dockerfile, docker-compose and initializer.json.
+Switch to this folder and run `docker compose up` wait when all containers started and open http://http://localhost:8080/ in browser you should see keycloak login window.
+
+## Keycloak configuration
+Protocol mappers are joined to shareable groupos with client scopes, in fact keycloak client scope is set of jwt mappers. Single scope can be assigned to multiple clients. Also each client have it own scope called `${client-name}-dedicated`.
+Let's configure external-claim-mapper that takes json from mockserver and includes it in user token. 
+
+1. Go to http://localhost:8080 login and password `admin`.
+2. Open `clients` on left menu.
+3. Open `account` client, in C`apability config` section set `Direct access grants` checkbox, click save button.
+4. Switch to `Clients scopes` tab and open `account-dedicated`, in `mappers` tab click button `Configure a new mapper`
+5. Select `External claim mapper` set following values: 
+    - Name: `test`
+    - Remote url: `http://mockserver:8081/userprofile`
+    - Request headers: Key `Content-Type` Value: `application/json`
+    - Token Claim Name: `test`
+    - Claim JSON Type: `JSON`
+6. Click save button
+
+## Testing
+You can test that mapper sends request to remote endpoint using following curl statement:
+```bash
+curl 'http://localhost:8080/realms/master/protocol/openid-connect/token'  \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'client_id=account' \
+  --data-urlencode 'grant_type=password' \
+  --data-urlencode 'username=admin' \
+  --data-urlencode 'password=admin'
+```
+This request should give you valid token with remote endpoint data:
+```json
+{
+   "access_token" : "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJUZGMxRW1mb2c2cm4yYlZ5RGw0al81VjFKMUMtUHBKWWNKVEJISWF2WndNIn0.eyJleHAiOjE3MjkyMDI4NDIsImlhdCI6MTcyOTIwMjc4MiwianRpIjoiZTQ5OTRkNjctMzU0Yi00MzY1LThlYzEtMTQxYzgzZDgzZDBlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9tYXN0ZXIiLCJzdWIiOiI3OWRhZjUxZi0yNjI0LTQxNGEtOWYxMC1hZDA0NDI2ZTk5NWUiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJhY2NvdW50Iiwic2lkIjoiNjdjYzg4MjQtNmI1NC00ZTkwLTliNzctOTFlYWQ5YzVlYmNiIiwiYWNyIjoiMSIsInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInRlc3QiOnsicm9sZXMiOnsidmFsdWVzIjpbInJvbGUxIiwicm9sZTIiLCJyb2xlMyJdfX0sInByZWZlcnJlZF91c2VybmFtZSI6ImFkbWluIn0.Jd-ThcB_QTuXoSaqsLg-Km0wA4XeLOIpni0cCmqJitV43L6hVs2RCDtwucWpXrWf4SeY9P3_YbCzx3vhHNL904cUQDXnhg0lZufhdzUUSnF5vSsjVuOLW9odyAi44dmRhBKI3FQFUGxv2JAoB1iISGCzmpdhFgzOHmmjbgrOuL5pcvQHG6cLNCfkappounDwccPtyTaJmOrEb3yDJzof0gjr7TbfXBcpQUCZn6OifXkzWwbpyKEDjL5eEWQd-0sZFexuFhOQX5d5uOJL0Wx5G8GCBhPsbQipyk5GCf_YaEo353pZ_nAYyvN75mmUMOJILpHUK2Ex55JgCBmi1N7SFg",
+   "expires_in" : 60,
+   "not-before-policy" : 0,
+   "refresh_expires_in" : 1800,
+   "refresh_token" : "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJmZmFkYjdiMy00Nzg3LTRhYjAtYWI2ZS0yMmExZDM0YjBmNTIifQ.eyJleHAiOjE3MjkyMDQ1ODIsImlhdCI6MTcyOTIwMjc4MiwianRpIjoiOTZkOWRiNGMtOGZkOC00MDI1LTgyNjItZDNmYmIzODg0YTQxIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9tYXN0ZXIiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL21hc3RlciIsInN1YiI6Ijc5ZGFmNTFmLTI2MjQtNDE0YS05ZjEwLWFkMDQ0MjZlOTk1ZSIsInR5cCI6IlJlZnJlc2giLCJhenAiOiJhY2NvdW50Iiwic2lkIjoiNjdjYzg4MjQtNmI1NC00ZTkwLTliNzctOTFlYWQ5YzVlYmNiIiwic2NvcGUiOiJiYXNpYyB3ZWItb3JpZ2lucyBlbWFpbCBwcm9maWxlIHJvbGVzIGFjciJ9.BQJPApuQ_-krRMBPP8vuwDyD1L9BJCxrhP4-BujYGbT4bWu8NRLAEJssYdg1e7yk6ajJxXeP6-pbk2tpYvgOCQ",
+   "scope" : "email profile",
+   "session_state" : "67cc8824-6b54-4e90-9b77-91ead9c5ebcb",
+   "token_type" : "Bearer"
+}
+```
+Decoded token holds additinal claims:
+![image](../../assets/2024-10-18_00-03.png)
+
+You can see keycloak request logs in mockserver container:
+![image](../../assets/2024-10-18_00-14.png)
+
+
+
+
+
+
+

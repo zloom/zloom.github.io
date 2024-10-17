@@ -1,16 +1,12 @@
 ---
 import { Image } from 'astro:assets';
-import heroImage from '../../assets/paul_smith.png';
+import heroImage from '../../assets/anton_zalialdinov.png';
 ---
 
 <section class="py-5 sm:py-10 lg:py-16">
     <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div class="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
-            <div class="relative flex justify-center">
-                <Image class="w-full md:max-w-md lg:max-w-md"
-                    src={heroImage}
-                    alt="Astro Resume Theme - Anton Zalialdinov" />
-            </div>
+            
             <div>
                 <p class="text-offset">
                     Software Engineer
@@ -24,6 +20,11 @@ import heroImage from '../../assets/paul_smith.png';
                     Hello, I'm an engineer with <b>10 years of experience</b> in software development and <b>comprehensive expertise</b>. I have worked with a wide range of technologies across various industries, including investment banking, digital lending, FMCG distribution, the United Nations, and a well-known poker company. I'm a <b>problem solver</b> and the engine ignitor that can drive your business forward.
                 </p>
                
+            </div>
+            <div class="relative flex justify-center">
+                <Image class="w-full md:max-w-md lg:max-w-md"
+                    src={heroImage}
+                    alt="Astro Resume Theme - Anton Zalialdinov" />
             </div>
         </div>
     </div>
