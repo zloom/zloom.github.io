@@ -1,40 +1,68 @@
 ---
-title: "Introduction to Astro: A New Era for Frontend Web Development"
-description: "Astro is an innovative framework for building fast, optimized websites with a focus on delivering minimal JavaScript to the client. Learn more about Astro's unique features and why it's gaining popularity."
-datetime: "2024-09-28"
-image: "https://picsum.photos/seed/3/640/426"
-url: "/blog/intro-to-astro"
+title: "Debugging keycloak extension"
+description: "It is hard to understand how your code will behave just by looking into it, to do it properly you literally need to run it in your head. Leave this task for debugger!"
+datetime: "2024-09-03"
+image: "/kc_ij_dk.png"
+url: "/blog/debugging-keycloak-extension"
 ---
 
-# Introduction to Astro: A New Era for Frontend Web Development
+# Debugging keycloak extension
+It is hard to understand how your code will behave just by looking into it, to do it properly you literally need to run it in your head. Complexity raises fast when you have big codebase like keycloak, instead of looking to sources or reading docs it makes sense to spent sometimne to setup debugger and walk through executon pasth.
 
+## Tools and codebase
+In this example im going to use InteliJ as java ide and Docker desktop for running keycloak. 
+- Docker Desktop https://www.docker.com/products/docker-desktop
+- IntelliJ IDEA https://www.jetbrains.com/idea/download
+- Maven and JDK 21 (or newer)
+- Keycloak codebase https://github.com/keycloak/keycloak
+- Example extension codebase https://github.com/zloom/keycloak-external-claim-mapper
 
+Download and install tools and clone code to local folders. Use official tools installation guides. You need to build keycloak, use official instructions https://github.com/keycloak/keycloak/blob/main/docs/building.md
+In this guide i wull use keycloak 25.0.0 so before building keycloak checkout proper version `git checkout tags/25.0.0`. Keycloak runs tests during build, you can skip them `./mvnw -pl quarkus/deployment,quarkus/dist -am -DskipTests clean install`
+We need local keycloak build because this will give us ability to navigate not only through sample extension sources but also keycloak code.
 
-Astro is an exciting new web development framework designed with performance in mind. By focusing on optimizing your website's speed and delivering only the necessary JavaScript, Astro aims to provide a fast and delightful experience for developers and users alikes.
+![image](../../assets/2024-10-21_14-58.png)
 
-## Why Astro?
+Keycloak buid took 2:49 min in my case ;-)
 
-Modern web frameworks often ship too much JavaScript to the client, which can slow down websites. Astro solves this problem by using **server-side rendering** (SSR) and a unique approach called **islands architecture** to only ship JavaScript when it's needed. This results in websites that load faster and feel more responsive.
+## Configuration and run
+Open IntelliJ and open project folder. In this project i used maven build tools so InteliJ will rely on .pom files.
+In IntelliJ welcome screen click open and choose `keycloak-external-claim-mapper`.  
+![image](../../assets/2024-10-21_15-08.png)
 
-### Key Features of Astro
+You need to add debug profile
 
-1. **Minimal JavaScript by Default**: Astro automatically reduces the amount of JavaScript sent to the client, ensuring faster page load times.
-2. **Islands Architecture**: Astro supports the islands architecture, where interactive elements (like buttons or forms) are treated as individual islands of interactivity. This allows you to deliver minimal JavaScript without sacrificing the power of client-side interactivity.
-3. **Framework Agnostic**: Whether you prefer React, Vue, Svelte, or just plain HTML, Astro allows you to mix and match various frontend frameworks in one project.
-4. **Markdown & MDX Support**: Astro makes it incredibly easy to write content using Markdown and MDX, enabling you to seamlessly integrate interactive components into your content.
-5. **Optimized for SEO**: With Astro, all the content is pre-rendered, making it highly optimized for search engines right out of the box.
+1. Click **Edit Configuration** like on screenshot above.
+2. Click add, choose **Remote JVM Debug**
+3. Set **Use module classpath** to **external-claim-mapper**
 
-## Example: Building a Blog with Astro
+Now let's run keycloak with sample extension, open `keycloak-external-claim-mapper` folder. Run terminal command `docker compose up --build`. You should see logs from all 3 containers: keycloak postgres and mockserver.
+Following logs are important for debugging, this means keycloak is running in debug mode.
 
-One of Astro's strong suits is how easy it makes creating static content sites such as blogs. Here's a quick snippet of how to set up a blog post using Astro and MDX:
+![image](../../assets/2024-10-21_19-00.png)
 
-```mdx
----
-title: "My First Astro Post"
-description: "Learning Astro and building awesome websites with minimal JavaScript."
-datetime: "2024-09-28"
----
+Following configuration is managing debug mode in keycloak, you can find this in dockerfile:
 
-# My First Astro Post
+```dockerfile
+ENV DEBUG='true'        # debug mode on/off
+ENV DEBUG_SUSPEND='n'   # await debugger connection when kecyloak start, this is usefull when you need to walk through startup code
+ENV DEBUG_PORT='*:5005' # debugger port, this should be mapped to localhost
+```
+## Debugging with breakpoints
+To start debugging you need to attach debugger, set breakpoints and trigget code execution. Lets attach IntelliJ to keycloak running in docker, to do that hit attach button on top rith corner or press shift+f9 shortcut.
+To set breakpoint open `keycloak-external-claim-mapper/external-claim-mapper/src/main/java/org.zloom/ExternalClaimMapper`, click on line 141 and press **ctrl+f8** shortcut.
 
-Welcome to my Astro-powered blog! This is my first post where I explore the possibilities of creating fast, modern websites with minimal JavaScript. Astro makes it easy to get started, and the performance benefits are immediate.
+![image](../../assets/2024-10-21_22-52.png)
+
+To trigger code execution, mappers are executed ducring token generation so you need to request user token from endpoint. To do that you need to send post request to token ednpoint, below is curl script.
+```bash
+curl 'http://localhost:8080/realms/dev/protocol/openid-connect/token'  \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'client_id=account' \
+  --data-urlencode 'grant_type=password' \
+  --data-urlencode 'username=test' \
+  --data-urlencode 'password=test' 
+```
+If all done rith you shoulbe able execute your extension code step by step, wit all variables available on call stack. There is also evaluation tool so you could check some functions without rebuilding.
+You can debug not only extension but keycloak itself aswell. Is not easy to find https requests entrypoints to that you need to open keycloak souces adn search across codebase for `@POST` or `@GET` among oher results it gave me this file **TokenEndpoint.Java**
+If i set breakpoint here i can walk through all steps of keycloak token genearation process, very usefull when you trying to setup for example token exchange.
