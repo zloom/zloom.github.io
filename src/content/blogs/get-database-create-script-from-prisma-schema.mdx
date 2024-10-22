@@ -1,38 +1,47 @@
 ---
-title: "Get database create script from prisma schema"
-description: "There is builtin mechanism to bring your database up to date with your schema however it not perfect when you need to quickly initialize it"
+title: "Get Database Create Script from Prisma Schema"
+description: "Prisma has a built-in mechanism to bring your database up to date with your schema, but it's not perfect when you need to quickly initialize it."
 datetime: "2024-09-02"
 image: "/prisma_logo.png"
 url: "/blog/get-database-create-script-from-prisma-schema"
 ---
 
-# Getting create script from prisma schema
+# Getting a Create Script from Prisma Schema
 
-TL;DR use this package https://www.npmjs.com/package/prisma-sql-gen
+**TL;DR:** Use this package: [prisma-sql-gen](https://www.npmjs.com/package/prisma-sql-gen)
 
-Prisma provide way to create db with schema with following command npx `prisma migrate dev`. This method have following limitations:
+Prisma provides a way to create a database from your schema using the following command:  
+`npx prisma migrate dev`.  
+However, this method has the following limitations:
 
-- It uses migrations and performs checks so works slow when applications have migrations history.
-- It requires shell command to run which is complicates app startup logic.
+- It uses migrations and performs checks, which makes it slow when the application has a large migration history.
+- It requires a shell command to run, complicating app startup logic.
 
-In my case migration folder was consist of approx 100 migrations + 3-5 migrations montly, with this amount database creation from scratch was taking near 10 mins. This was a significant part of the pipeline execution time. Prisma is tool of choice for node js when you need to deal with database like entity framework for .net or Nhibernate for java.
+In my case, the migration folder contained approximately 100 migrations, with an additional 3-5 migrations being added monthly. With this amount, creating the database from scratch took nearly 10 minutes, which was a significant portion of the pipeline execution time. Prisma is the tool of choice for Node.js when dealing with databases, similar to Entity Framework for .NET or NHibernate for Java.
 
-Imagine now every team developing backend applications in nodejs having this migration folder, such a waste of computation resources! Another aspect is npx command, in modern kunbernetes environment the overwhelming majority of developer will equip nodejs app with shell script, which will require npx and prisma cli installed on image, it will imcrease aatck surface on app and make imnage fat.
+Now, imagine every team developing backend applications in Node.js having such a migration folder. What a waste of computational resources! Another concern is the use of `npx`. In modern Kubernetes environments, most developers equip Node.js apps with shell scripts, which will require `npx` and the Prisma CLI to be installed in the image. This increases the attack surface of the app and makes the image heavier.
 
-Ideally migrations check and db init should be solced in app entry point. Luckily prisma exposed its internal package which is used by npx cli `https://www.npmjs.com/package/@prisma/migrate`
-Internally it uses JSON-RPC to communicate with prisma core tool written in `Rust` `https://github.com/prisma/prisma-engines`. You can also find a way to get raw create script from cli tool. The command which will print huge sql to console is `npx prisma migrate diff --from-empty --to-schema-datasource prisma/schema.prisma --script`
-So we just need to find proper command and intercept JSON response from rust core. After some search in migrate package https://github.com/prisma/prisma/tree/main/packages/migrate i created following snippet:
+Ideally, migration checks and database initialization should be handled in the app's entry point. Fortunately, Prisma exposes its internal package used by the `npx` CLI:  
+[`@prisma/migrate`](https://www.npmjs.com/package/@prisma/migrate).
+
+Internally, it uses JSON-RPC to communicate with the core Prisma tool, written in Rust:  
+[`prisma-engines`](https://github.com/prisma/prisma-engines). You can also extract the raw create script using the CLI. The command that prints a large SQL script to the console is:  
+`npx prisma migrate diff --from-empty --to-schema-datasource prisma/schema.prisma --script`
+
+All we need to do is find the correct command and intercept the JSON response from the Rust core. After exploring the `migrate` package:  
+[prisma/migrate](https://github.com/prisma/prisma/tree/main/packages/migrate), I created the following snippet:
+
 ```typescript
 import { SchemaEngine } from '@prisma/migrate'
 import { resolve } from 'path'
 
-//inherite internal engine class
+// Inherit the internal engine class
 class GeneratorEngine extends SchemaEngine {
   public createScript: string
   constructor() {
     super({ projectDir: process.cwd(), schemaPath: '' })
     this.createScript = ''
-    //assign custom handler to JSON RPC response handler, this handler look much more commplex in prisma but we dont care we use it only for single command
+    // Assign a custom handler to the JSON RPC response handler. Prisma's original handler is more complex, but we only need it for a single command.
     this['handleResponse'] = (response: string) => {
       try {
         this.createScript = JSON.parse(response).params.content
@@ -44,7 +53,8 @@ class GeneratorEngine extends SchemaEngine {
     }
   }
 }
-// wrap with empty try catch block, because engine workjs with smoke and sparcles with dummy handler
+
+// Wrap with an empty try-catch block, because the engine works with dummy handlers
 export const schemaToScript = async (schemaPath: string = 'prisma/schema.prisma') => {
   const engine = new GeneratorEngine()
   try {
@@ -57,5 +67,3 @@ export const schemaToScript = async (schemaPath: string = 'prisma/schema.prisma'
 
   return engine.createScript
 }
-
-```
