@@ -6,4 +6,56 @@ image: "/prisma_logo.png"
 url: "/blog/get-database-create-script-from-prisma-schema"
 ---
 
-# TBA
+# Getting create script from prisma schema
+
+TL;DR use this package https://www.npmjs.com/package/prisma-sql-gen
+
+Prisma provide way to create db with schema with following command npx `prisma migrate dev`. This method have following limitations:
+
+- It uses migrations and performs checks so works slow when applications have migrations history.
+- It requires shell command to run which is complicates app startup logic.
+
+In my case migration folder was consist of approx 100 migrations + 3-5 migrations montly, with this amount database creation from scratch was taking near 10 mins. This was a significant part of the pipeline execution time. Prisma is tool of choice for node js when you need to deal with database like entity framework for .net or Nhibernate for java.
+
+Imagine now every team developing backend applications in nodejs having this migration folder, such a waste of computation resources! Another aspect is npx command, in modern kunbernetes environment the overwhelming majority of developer will equip nodejs app with shell script, which will require npx and prisma cli installed on image, it will imcrease aatck surface on app and make imnage fat.
+
+Ideally migrations check and db init should be solced in app entry point. Luckily prisma exposed its internal package which is used by npx cli `https://www.npmjs.com/package/@prisma/migrate`
+Internally it uses JSON-RPC to communicate with prisma core tool written in `Rust` `https://github.com/prisma/prisma-engines`. You can also find a way to get raw create script from cli tool. The command which will print huge sql to console is `npx prisma migrate diff --from-empty --to-schema-datasource prisma/schema.prisma --script`
+So we just need to find proper command and intercept JSON response from rust core. After some search in migrate package https://github.com/prisma/prisma/tree/main/packages/migrate i created following snippet:
+```typescript
+import { SchemaEngine } from '@prisma/migrate'
+import { resolve } from 'path'
+
+//inherite internal engine class
+class GeneratorEngine extends SchemaEngine {
+  public createScript: string
+  constructor() {
+    super({ projectDir: process.cwd(), schemaPath: '' })
+    this.createScript = ''
+    //assign custom handler to JSON RPC response handler, this handler look much more commplex in prisma but we dont care we use it only for single command
+    this['handleResponse'] = (response: string) => {
+      try {
+        this.createScript = JSON.parse(response).params.content
+      } catch (error) {
+        throw `Invalid response: ${error}, response ${response}`
+      } finally {
+        this.stop()
+      }
+    }
+  }
+}
+// wrap with empty try catch block, because engine workjs with smoke and sparcles with dummy handler
+export const schemaToScript = async (schemaPath: string = 'prisma/schema.prisma') => {
+  const engine = new GeneratorEngine()
+  try {
+    await engine.migrateDiff({
+      script: true,
+      from: { tag: 'empty' },
+      to: { tag: 'schemaDatamodel', schema: resolve(schemaPath) },
+    })
+  } catch (error) {}
+
+  return engine.createScript
+}
+
+```
