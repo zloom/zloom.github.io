@@ -1,16 +1,19 @@
 ---
-title: "Configure shadowsocks client on ubuntu"
-description: "Shadowsocks is great tool, windows and android clients are close to wireguard in its capabilities to wrap all traffic. On ubuntu it is not so straightforward."
+title: "Configure Shadowsocks Client on Ubuntu"
+description: "Shadowsocks is a great tool. Windows and Android clients are close to WireGuard in their ability to wrap all traffic. On Ubuntu, it's not so straightforward."
 datetime: "2024-09-04"
 image: "/ss_sst_u.png"
 url: "/blog/configure-shadowsocks-client-ubuntu"
 ---
 
-# Configure shadowsocks client on ubuntu
-Shadowsocks is popular option for building secure tunnels with masked traffic, it simple and ligthweigth. Unlike other similar tools like wireguard or openvpn it have lack of organized development process. So there is no good centralised documentation, multiple versions and tricky client configuration.
+# Configure Shadowsocks Client on Ubuntu
+
+Shadowsocks is a popular option for building secure tunnels with masked traffic. It's simple and lightweight. Unlike other similar tools like WireGuard or OpenVPN, Shadowsocks lacks a well-organized development process. This means there is no centralized documentation, multiple versions exist, and client configuration can be tricky.
 
 ## Server
-Server setup is simple-dimple, below is sample docker compose, you have to install docker to use it.
+
+Setting up the server is quite simple. Below is a sample Docker Compose file. You’ll need to install Docker to use it.
+
 ```yaml
 version: "2.1"
 services:
@@ -25,67 +28,105 @@ services:
       - PASSWORD=your_password
     restart: always
 ```
+
 ## Client
-Client is working as local proxy, that means you configure and connect it to your remote server, locally it is exposed as http or socks5 proxy. 
-- For **Windows** there is nice gui client, you can set global proxy with single click i was able to use almost same as wiregurd client. However there is some applications that are ignoring system proxy configuration, so their tfaffic will pass by the tunnel.
-- **Android** client is also have quite smooth use experience one client and all traffic is wrapped.
-- There is a plenty of clients for **Ubuntu** but did not found a proper that can work like wireguard, you have to configure each app individually in some cases it is impossible.
-- I did not checked **macOS** and **iOS** yet =)
 
-## Configuring shadowsocks to wrap all traffic on Ubuntu
-Proper solution for Ubuntu is use shadowsocks in combinations with tool like tun2socks, this tools stream your traffic from network adaptor to shadowsocks loclal proxy. Lets try to configure such conbintaion.
-Lets install following tools:
-- tun2socks https://github.com/xjasonlyu/tun2socks
-- shadowsocks https://github.com/shadowsocks/shadowsocks-rust 
-I downloalded binariws from release pages and moved binaries to ``/usr/bin``
+The Shadowsocks client works as a local proxy, meaning you configure and connect it to your remote server, but locally it is exposed as an HTTP or SOCKS5 proxy.
 
-Assyming you have server running as configured above, we will use `sslocal` binary, so your client command will be 
+- **Windows**: There is a nice GUI client that allows you to set a global proxy with a single click. I found it to be almost as good as the WireGuard client. However, some applications ignore system proxy configurations, so their traffic may bypass the tunnel.
+- **Android**: The client experience is also smooth—one client, and all traffic is wrapped.
+- **Ubuntu**: While there are plenty of clients, I couldn't find one that works like WireGuard. You’ll need to configure each app individually, and in some cases, it may be impossible.
+- **macOS/iOS**: I haven’t checked yet =)
+
+## Configuring Shadowsocks to Wrap All Traffic on Ubuntu
+
+A proper solution for Ubuntu is to use Shadowsocks in combination with a tool like `tun2socks`, which streams your traffic from a network adapter to the local Shadowsocks proxy. Let’s configure this combination.
+
+First, install the following tools:
+
+- [tun2socks](https://github.com/xjasonlyu/tun2socks)
+- [Shadowsocks](https://github.com/shadowsocks/shadowsocks-rust)
+
+I downloaded the binaries from the release pages and moved them to `/usr/bin`.
+
+Assuming you have a server running as configured above, we will use the `sslocal` binary. Your client command will look like this:
+
 ```bash
 sslocal -s "shadowsocks_server:shadowsocks_port" -k "your_password" -m "chacha20-ietf-poly1305" --local-addr 127.0.0.1:1080 -U
 ```
-Output should look like mine:
 
-![Shadowsocks Output](../../assets/2024-10-24_12-06.png)  
+The output should look something like this:
 
-Now you can test client with curl `curl --proxy "127.0.0.1:1080" "https://ifconfig.me"` it should return ip adress of your remote shadowsocks server. Now you need to create local network adapter and route all traffict to it then your have to start tun2socks to direct traffict from that adapter to shadowsocks tunnel.
-Lets create network adapter:
+![Shadowsocks Output](../../assets/2024-10-24_12-06.png)
+
+Now, you can test the client with `curl`:
+
+```bash
+curl --proxy "127.0.0.1:1080" "https://ifconfig.me"
+```
+
+It should return the IP address of your remote Shadowsocks server.
+
+Next, you need to create a local network adapter and route all traffic through it. Then, use `tun2socks` to direct traffic from that adapter to the Shadowsocks tunnel.
+
+Create the network adapter with the following commands:
+
 ```bash
 ip tuntap add mode tun tun0
 ip addr add 10.0.0.2/24 dev tun0
 ip link set dev tun0 up
 ```
-Lets run tun2socks `tun2socks -device tun0 -proxy socks5://127.0.0.1:1080`, lets check if it works ` curl --interface tun0 http://ifconfig.me`, output should be your shadowsocks server ip.
 
-Proper tun2socks output look like that
+Run `tun2socks` with:
 
-![Tun2socks Output](../../assets/2024-10-24_12-29.png)  
+```bash
+tun2socks -device tun0 -proxy socks5://127.0.0.1:1080
+```
 
-Now lets direct your traffic to network interface **tun0** and exclude traffict that goes to shadowsocks server, othevice it will stuck in loop.
-You need to obtain your gateway adress and outer interface name:
-```bash 
-# gateway ip adress
+You can check if it works with:
+
+```bash
+curl --interface tun0 http://ifconfig.me
+```
+
+The output should be your Shadowsocks server's IP address.
+
+Proper `tun2socks` output looks like this:
+
+![Tun2socks Output](../../assets/2024-10-24_12-29.png)
+
+Now, let's route your traffic through the **tun0** network interface and exclude traffic going to the Shadowsocks server. Otherwise, it will create a loop.
+
+First, obtain your gateway address and outer interface name:
+
+```bash
+# gateway IP address
 ip route | grep default | awk '{print $3}'
-# outer inteface
+# outer interface
 ip route | grep default | awk '{print $5}'
 ```
-Configure traffic routing:
+
+Next, configure the traffic routing:
+
 ```bash
 ip route add "shadowsocks_server_ip" via "gateway_ip" dev "outer_interface"
 ip rule add to "shadowsocks_server_ip" lookup main priority 1000
 ```
-Last command may cause issues if something is not working you may endup without internet at all so your here is command and command to undo it:
-- to route traffic to tunnel `ip route add default dev tun0 table 100`
-- to rever it `ip route delete default dev tun0 table 100`
-If all works fine you can open browser and go to https://www.iplocation.net it should show location of your server, you can test with curl aswell `curl "https://ifconfig.me`.
 
+The last command might cause issues. If something goes wrong, you may end up without internet access. Here are commands to route traffic to the tunnel and to revert it if needed:
 
+- To route traffic to the tunnel:  
+```bash
+ip route add default dev tun0 table 100
+```
 
+- To revert the routing:  
+```bash
+ip route delete default dev tun0 table 100
+```
 
+If everything works fine, you can open a browser and visit [iplocation.net](https://www.iplocation.net). It should show the location of your Shadowsocks server. You can also test it with:
 
-
-
-
-
-
-
-
+```bash
+curl "https://ifconfig.me"
+```
