@@ -1,1 +1,5 @@
 @import "theme.css";
+
+.avatar {
+  border-radius: 50%;
+}
