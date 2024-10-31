@@ -31,10 +31,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       property="og:description"
       content="Blog and portfolio focused on software development, NodeJs, .NET, Golang, Databases, DevOps, and other technical things."
     />
-		<link rel="canonical" href={canonicalURL} />
-		<meta property="og:url" content={canonicalURL}>
-		<meta property="og:site_name" content="Anton Zalialdinov">
-		<meta property="og:type" content="website">
+    <link rel="canonical" href={canonicalURL} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content="Anton Zalialdinov" />
+    <meta property="og:type" content="website" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <title>{title}</title>
@@ -65,16 +65,20 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <script
       defer
       data-domain="zloom.org"
-      src="https://plausible.io/js/script.js"></script>
+      src="https://plausible.io/js/script.tagged-events.js"></script>
     <GoogleAnalytics id="G-C4F267XKY9" />
-		<script type="application/ld+json" set:html={JSON.stringify({
-			"@context": "https://schema.org/",
-			"@type": "WebPage",
-			"author":{"@type":"Person","name":"Anton Zalialdinov"},
-			"description":"Blog and portfolio focused on software development, NodeJs, .NET, Golang, Databases, DevOps, and other technical things.",
-			"headline":{title},
-			"url":{canonicalURL}
-		})}/>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org/",
+        "@type": "WebPage",
+        author: { "@type": "Person", name: "Anton Zalialdinov" },
+        description:
+          "Blog and portfolio focused on software development, NodeJs, .NET, Golang, Databases, DevOps, and other technical things.",
+        headline: { title },
+        url: { canonicalURL },
+      })}
+    />
   </head>
   <body
     class="h-full overflow-x-hidden bg-default text-default text-base selection:bg-secondary selection:text-white"
