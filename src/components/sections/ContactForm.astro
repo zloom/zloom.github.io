@@ -3,10 +3,35 @@
 ---
 
 <section class="py-5 sm:py-10 lg:py-16">
-  <div class="container mx-auto px-4 max-w-4xl">
+  <div class="container mx-auto px-4 max-w-4xl flex_centre padding">
     <div>
-      <h1 class="text-center text-3xl mb-10">Contact</h1>
-      <p class="text-center mb-6 text-lg font-normal">Please email me at <a href= "mailto: zloomsky@gmail.com" class="font-medium text-primary pt-2">anton.zalialdinov@gmail.com</a> or send a message via form below</p>
+      <h1 class="text-center text-3xl mb-10">Meeteng:</h1>
+      <p class="text-center mb-6 text-lg font-normal">
+        Schedule a short call to get a consultation
+      </p>
+      <div class="mt-10 sm:flex sm:items-center sm:space-x-8 flex_centre">
+        <a
+          href=`https://calendly.com/antonzalialdinov/30min`
+          title="Meet"
+          class="plausible-event-name=Button+Click inline-flex items-center justify-center px-10 py-4 text-base text-white
+                font-semibold transition-all duration-200 rounded
+                bg-primary hover:bg-secondary focus:bg-secondary"
+          role="button"
+        >
+        Meet
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="container mx-auto px-4 max-w-4xl flex_centre">
+    <div>
+      <h1 class="text-center text-3xl mb-10">Message:</h1>
+      <p class="text-center mb-6 text-lg font-normal">
+        Please email me at <a
+          href="mailto: anton.zalialdinov@gmail.com"
+          class="font-medium text-primary pt-2">anton.zalialdinov@gmail.com</a
+        > or send a message via form below
+      </p>
       <form
         action="https://api.web3forms.com/submit"
         method="POST"
@@ -67,13 +92,15 @@
             >Message</label
           >
         </div>
-        <button
-          type="submit"
-          class="inline-flex items-center justify-center px-10 py-4 text-base text-white
+        <div class="flex_centre">
+          <button
+            type="submit"
+            class="plausible-event-name=Button+Click inline-flex items-center justify-center px-10 py-4 text-base text-white
           font-semibold transition-all duration-200 rounded
-          bg-primary hover:bg-secondary focus:bg-secondary" role="button"
-          >Send</button
-        >
+          bg-primary hover:bg-secondary focus:bg-secondary"
+            role="button">Send</button
+          >
+        </div>
       </form>
     </div>
   </div>

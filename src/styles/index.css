@@ -12,3 +12,12 @@
   flex-direction: column;
   justify-content: space-between;
 }
+
+.flex_centre {
+  display: flex;
+  justify-content: center;
+}
+
+.padding {
+  padding-bottom: 50px;
+}
