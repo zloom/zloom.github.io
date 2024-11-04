@@ -21,3 +21,9 @@
 .padding {
   padding-bottom: 50px;
 }
+
+.skills {
+  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+}

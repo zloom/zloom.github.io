@@ -1,4 +1,5 @@
 ---
+import CareerPath from './CareerPath.astro';
 import Contributions from './sub_sections/OSSContributions.astro';
 import Projects from './sub_sections/Projects.astro';
 ---
@@ -6,12 +7,11 @@ import Projects from './sub_sections/Projects.astro';
 <section class="py-16 bg-background">
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row lg:space-x-12">
+      <div class="lg:w-1/2">
+        <CareerPath />
+      </div>
       <div class="lg:w-1/2 mb-12 lg:mb-0">
         <Contributions />
-      </div>
-
-      <div class="lg:w-1/2">
-        <Projects />
       </div>
     </div>
   </div>

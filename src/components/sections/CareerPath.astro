@@ -1,0 +1,204 @@
+---
+const careerPath = [
+  {
+    company: "Oneiro Solutions",
+    title: "Senior software engineer, devops",
+    from: "10.01.2023",
+    to: "10.04.2024",
+    project:
+      "Digital lending platform. Smart contract engine with distributed relational database as persistance layer.",
+    areas: [
+      "Local development environment",
+      "Authorization service",
+      "E2E tests",
+      "Software development typescript/java",
+    ],
+    skills: [
+      "Keycloak",
+      "CockroachDB",
+      "Kubernetes",
+      "NodeJS",
+      "Java",
+      "GQL",
+      "Linux",
+      "Skaffold",
+      "Kind",
+      "fp-ts",
+    ],
+  },
+  {
+    company: "A5 Labs",
+    title: "Senior software engineer, payments architect",
+    from: "01.06.2020",
+    to: "26.12.2022",
+    project: "WPT Global poker platform.",
+    areas: [
+      "Cashier",
+      "PSP vendors and integrations",
+      "Transaction processing, performance and consistency",
+      "Telemetry and alerting",
+      "Managing backlog, coordinating engineering work",
+      "Payments processing",
+      "Tech interviews",
+      "Poker services development",
+      "Docker infrastructure management",
+      "Responsible gambling services",
+      "Complex microservice system investigation",
+    ],
+    skills: [
+      "Project Planning",
+      "Software Solution Architecture",
+      "Microservices",
+      "Distributed Systems",
+      "Project Management",
+      "Payments",
+      "Docker Products",
+      ".NET Core",
+      "Golang",
+      "PHP",
+      "MySQL",
+      "Elasticsearch",
+    ],
+  },
+  {
+    company: "United Nations",
+    title: "Senior software engineer",
+    from: "01.10.2019",
+    to: "01.06.2020",
+    project:
+      "eLUNa - translation interface specifically developed for the translation of United Nations documents",
+    areas: ["DevOps", "Tests automation", "WHO data import"],
+    skills: [
+      "Azure DevOps",
+      "Test Automation",
+      "ASP.NET MVC",
+      ".NET Framework",
+      "Selenium",
+      "Elasticsearch",
+    ],
+  },
+  {
+    company: "Luxoft - UBS",
+    title: "Senior software engineer",
+    from: "01.08.2017",
+    to: "01.07.2019",
+    project: "RIPT - Regulatory Independent Price Verification and Testing.",
+    areas: [
+      "Supported and developed internal application with distributed cpu intensive computations",
+      "Implemented financial model calibration algorithms",
+      "Created from scratch and extended web app (react, redux, rxjs, material ui, typescript, webpack)",
+      "Refactored ci process from build scripts to paperwork",
+      "Conducted tech interviews",
+    ],
+    skills: [
+      "Reactive Programming",
+      "Algorithms",
+      "Quantitative Finance",
+      "TypeScript",
+      ".NET Framework",
+      "React.js",
+      "F#",
+      "TeamCity",
+    ],
+  },
+  {
+    company: "System Technologies, Ltd.",
+    title: "Software engineer -> Senior software engineer",
+    from: "01.04.2015",
+    to: "01.08.2017",
+    project: "ULS - update and licensing service",
+    areas: [
+      "Created prototype of scalable backend service",
+      "Develop new and support existing web applications",
+      "Support and configure continuous integration",
+      "Support and deploy services based on Azure",
+    ],
+    skills: [
+      "Microsoft SQL",
+      "AngularJS",
+      "ASP.NET MVC",
+      "JavaScript",
+      "TeamCity",
+      "F#",
+      "MS Orleans",
+      "Entity Framework",
+      "Bootstrap",
+    ],
+  },
+  {
+    company: "Neolant",
+    title: "Software engineer",
+    from: "01.08.2014",
+    to: "01.04.2015",
+    project: "Various fuel and energetic industry projects",
+    areas: [
+      "Participated in a large project automating document flow in energy companies.",
+    ],
+    skills: ["WCF", "Microsoft SQL", "WPF", "Silverlight"],
+  },
+  {
+    company: "Positron",
+    title: "Software engineer",
+    from: "01.06.2013",
+    to: "01.08.2014",
+    project: "Furniture production accountant system",
+    areas: [
+      "Developed from scratch a manufacturing and accounting system. System controlled all aspects of inventory from manufacturing to a final packaged product.",
+      "Supported and developed system for furniture production.",
+    ],
+    skills: ["Winforms", "Microsoft SQL", "ASP.NET"],
+  },
+];
+---
+
+<section class="py-12 bg-background">
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl font-extrabold text-center mb-12">Career Path</h2>
+    <ol class="relative border-s border-gray-200 dark:border-gray-700">
+      {
+        careerPath.map((item) => (
+          <li class="mb-10 ms-6">
+            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+              <svg
+                class="w-2.5 h-2.5 text-blue-800 dark:text-blue-300"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+              </svg>
+            </span>
+            <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+              {item.from} - {item.to}
+            </time>
+            <h3 class="text-2xl font-semibold">{item.company}</h3>
+            <h4 class="flex items-center mb-1 text-lg font-normal text-gray-800 dark:text-white">
+              {item.title}
+            </h4>
+            <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
+              {item.project}
+            </p>
+            <ul class="ps-5 mb-3 space-y-1 list-disc list-inside">
+              Key areas:
+              <p>
+                {item.areas.map((area) => (
+                  <li class="text-base font-normal text-gray-500 dark:text-gray-400">
+                    {area}
+                  </li>
+                ))}
+              </p>
+            </ul>
+            <ul class="skills">
+              {item.skills.map((skill) => (
+                <span class="bg-blue-100 text-blue-800 text-xs font-medium m-1 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                  {skill}
+                </span>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
