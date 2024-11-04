@@ -7,9 +7,10 @@ import GoogleAnalytics from "../components/GoogleAnalytics.astro";
 
 interface Props {
   title: string;
+  description: string;
 }
 
-const { title } = Astro.props;
+const { title, description } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -23,21 +24,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="generator" content={Astro.generator} />
     <meta property="og:title" content={title} />
     <meta property="og:locale" content="en_US" />
-    <meta
-      name="description"
-      content="Blog and portfolio focused on software development, NodeJs, .NET, Golang, Databases, DevOps, and other technical things."
-    />
-    <meta
-      property="og:description"
-      content="Blog and portfolio focused on software development, NodeJs, .NET, Golang, Databases, DevOps, and other technical things."
-    />
+    <meta name="description" content={description} />
+    <meta property="og:description" content={description} />
     <link rel="canonical" href={canonicalURL} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content="Anton Zalialdinov" />
     <meta property="og:type" content="website" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <title>{title}</title>   
+    <title>{title}</title>
     <script
       defer
       data-domain="zloom.org"
@@ -49,10 +44,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         "@context": "https://schema.org/",
         "@type": "WebPage",
         author: { "@type": "Person", name: "Anton Zalialdinov" },
-        description:
-          "Blog and portfolio focused on software development, NodeJs, .NET, Golang, Databases, DevOps, and other technical things.",
-        headline: { title },
-        url: { canonicalURL },
+        description: description,
+        headline: title,
+        url: canonicalURL,
       })}
     />
   </head>
