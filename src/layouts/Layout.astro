@@ -4,7 +4,7 @@ import Footer from "../components/sections/Footer.astro";
 
 import "../styles/index.css";
 import GoogleAnalytics from "../components/GoogleAnalytics.astro";
-import avatar from "../assets/anton_zalialdinov.png";
+import logo from "../assets/anton_zalialdinov_200.png";
 import { imagealt, sitename } from "../constants";
 import { getJsonMeta } from "../utils";
 
@@ -28,10 +28,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonicalURL} />
-    <meta property="og:image:width" content="300" />
-    <meta property="og:image:height" content="300" />
+    <meta property="og:image:width" content="720" />
+    <meta property="og:image:height" content="720" />
     <meta property="og:image:alt" content={imagealt} />
-    <meta property="og:image" content={avatar.src} />
+    <meta property="og:image" content={logo.src} />
     <meta property="og:title" content={title} />
     <meta property="og:locale" content="en_US" />
     <meta property="og:description" content={description} />
