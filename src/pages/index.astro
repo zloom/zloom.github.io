@@ -2,9 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import About from '../components/sections/About.astro';
 import Resume from '../components/sections/Resume.astro';
+import { about_description, about_title } from '../constants';
 ---
 
-<Layout title="Anton Zalialdinov" description="Blog and portfolio focused on software development, NodeJs, .NET, Golang, Databases, DevOps, and other technical things.">
+<Layout title={about_title} description={about_description} type='website'>
 	<About />
 	<Resume />
 </Layout>

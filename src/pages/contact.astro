@@ -1,8 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ContactForm from '../components/sections/ContactForm.astro';
+import { contact_description, contact_title } from '../constants';
 ---
 
-<Layout title="Contact | Anton Zalialdinov" description="Anton Zalialdinov, send message or book a consultation">
+<Layout title={contact_title} description={contact_description} type='website'>
 	<ContactForm />
 </Layout>
