@@ -3,10 +3,10 @@ import { Image } from "astro:assets";
 import avatar from "../../assets/anton_zalialdinov.png";
 ---
 
-<section class="py-5 sm:py-10 lg:py-16">
-  <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+<section class="pt-16 bg-background">
+  <div class="container mx-auto px-6">
     <div class="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
-      <div class="relative flex justify-center">
+      <div class="relative flex justify-center px-7">
         <Image
           class="w-full md:max-w-md lg:max-w-md avatar"
           src={avatar}
@@ -14,7 +14,7 @@ import avatar from "../../assets/anton_zalialdinov.png";
         />
       </div>
 
-      <div class="about">
+      <div class="about px-7">
         <p class="text-offset">Expert Software Engineer</p>
 
         <h1 class="text-2xl font-bold sm:text-4xl lg:text-5xl mt-3">
