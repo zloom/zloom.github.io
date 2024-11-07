@@ -29,17 +29,9 @@ const { Content } = await blog.render();
 ---
 
 <Layout title={blog.data.title} description={blog.data.description} dateModified={blog.data.datetime} type="article">
-  <section class="flex justify-center mt-12">
-    <div id="markdown" class="prose prose-2xl overflow-visible relative mb-5">
+  <section class="flex justify-center m-6">
+    <div id="markdown" class="prose prose-xl mb-5 prose-invert mx-auto container px-7">
       <Content />
     </div>
   </section>
-
-  <script>
-    import { toggleMarkdownTheme } from "../../scripts/theme";
-
-    const theme = localStorage.getItem("theme") || "dark";
-
-    toggleMarkdownTheme(theme);
-  </script>
 </Layout>

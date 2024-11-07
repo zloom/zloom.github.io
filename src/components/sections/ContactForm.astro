@@ -2,106 +2,110 @@
 
 ---
 
-<section class="py-5 sm:py-10 lg:py-16">
-  <div class="container mx-auto px-4 max-w-4xl flex_centre padding">
-    <div>
-      <h1 class="text-center text-3xl mb-10">Meeteng:</h1>
-      <p class="text-center mb-6 text-lg font-normal">
-        Schedule a short call to get a consultation
-      </p>
-      <div class="mt-10 sm:flex sm:items-center sm:space-x-8 flex_centre">
-        <a
-          href=`https://cal.com/anton-zalialdinov-h7y1sx/30min`
-          title="Meet"
-          class="plausible-event-name=Schedule+call inline-flex items-center justify-center px-10 py-4 text-base text-white
+<section class="pt-16 bg-background">
+  <div class="container mx-auto px-6">
+    <div class="flex flex-col lg:flex-row lg:space-x-12 px-7">
+      <div class="lg:w-1/2 flex flex-col items-start mb-12 lg:mb-0">
+        <h2 class="text-4xl font-extrabold text-center mb-12">Technical Consultation</h2>
+        <p class="mb-6 text-lg font-normal">
+          I’d be glad to schedule a brief meeting to discuss your technical
+          needs and objectives. Whether you’re looking to overcome complex
+          challenges, optimize existing systems, or start a new development
+          project, I’m here to provide insight and effective solutions. Let’s
+          connect to explore how my expertise can help you tackle technical
+          hurdles and drive your projects forward with confidence.
+        </p>
+        <div class="mt-10 sm:space-x-8 flex flex-col justify-end grow">
+          <a
+            href=`https://cal.com/anton-zalialdinov-h7y1sx/30min`
+            title="Meet"
+            class="plausible-event-name=Schedule+call inline-flex items-center justify-center px-10 py-4 text-base text-white
                 font-semibold transition-all duration-200 rounded
                 bg-primary hover:bg-secondary focus:bg-secondary"
-          role="button"
-        >
-        Meet
-        </a>
+            role="button"
+          >
+            Schedule call
+          </a>
+        </div>
       </div>
-    </div>
-  </div>
-  <div class="container mx-auto px-4 max-w-4xl flex_centre">
-    <div>
-      <h1 class="text-center text-3xl mb-10">Message:</h1>
-      <p class="text-center mb-6 text-lg font-normal">
-        Please email me at <a
-          href="mailto: anton.zalialdinov@gmail.com"
-          class="plausible-event-name=Send+email font-medium text-primary pt-2">anton.zalialdinov@gmail.com</a
-        > or send a message via form below
-      </p>
-      <form
-        action="https://api.web3forms.com/submit"
-        method="POST"
-        class="max-w-md mx-auto"
-      >
-        <input
-          type="hidden"
-          name="access_key"
-          value="aae2eafe-37d2-4d2e-b2f3-76c8c9ed9c36"
-        />
-        <input
-          type="hidden"
-          name="redirect"
-          value="https://web3forms.com/success"
-        />
-        <div class="grid md:grid-cols-2 md:gap-6">
-          <div class="relative z-0 w-full mb-5 group">
-            <input
-              type="text"
-              name="name"
-              id="floating_name"
+      <div class="lg:w-1/2 mb-12 lg:mb-0 flex flex-col items-start">
+        <h2 class="text-4xl font-extrabold text-center mb-12">Get in Touch</h2>
+        <p class="mb-6 text-lg font-normal">
+          If you have any questions or would like more information, feel free to reach out. You can email me at <a
+            href="mailto: anton.zalialdinov@gmail.com"
+            class="plausible-event-name=Send+email font-medium text-primary pt-2"
+            >anton.zalialdinov@gmail.com</a
+          > or send a message using the form below. I personally review each message and will be happy to provide support or discuss your project.
+        </p>
+        <form
+          action="https://api.web3forms.com/submit"
+          method="POST"
+          class="size-full"
+        >
+          <input
+            type="hidden"
+            name="access_key"
+            value="aae2eafe-37d2-4d2e-b2f3-76c8c9ed9c36"
+          />
+          <input
+            type="hidden"
+            name="redirect"
+            value="https://web3forms.com/success"
+          />
+          <div class="grid md:grid-cols-2 md:gap-6">
+            <div class="relative z-0 w-full mb-5 group">
+              <input
+                type="text"
+                name="name"
+                id="floating_name"
+                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=" "
+                required
+              />
+              <label
+                for="floating_name"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >Name</label
+              >
+            </div>
+            <div class="relative z-0 w-full mb-5 group">
+              <input
+                type="email"
+                name="email"
+                id="floating_email"
+                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=" "
+                required
+              />
+              <label
+                for="floating_email"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >Email</label
+              >
+            </div>
+          </div>
+          <div class="relative z-0 w-full mb-12 group">
+            <textarea
+              name="message"
+              id="floating_message"
               class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
-            />
+              required></textarea>
             <label
-              for="floating_name"
-              class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-              >Name</label
+              for="floating_message"
+              class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              >Message</label
             >
           </div>
-          <div class="relative z-0 w-full mb-5 group">
-            <input
-              type="email"
-              name="email"
-              id="floating_email"
-              class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              for="floating_email"
-              class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-              >Email</label
+            <button
+              type="submit"
+              class="inline-flex items-center justify-center px-10 py-4 text-base text-white
+            font-semibold transition-all duration-200 rounded
+            bg-primary hover:bg-secondary focus:bg-secondary"
+              role="button">Send message</button
             >
-          </div>
-        </div>
-        <div class="relative z-0 w-full mb-5 group">
-          <textarea
-            name="message"
-            id="floating_message"
-            class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            required></textarea>
-          <label
-            for="floating_message"
-            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >Message</label
-          >
-        </div>
-        <div class="flex_centre">
-          <button
-            type="submit"
-            class="plausible-event-name=Send+message inline-flex items-center justify-center px-10 py-4 text-base text-white
-          font-semibold transition-all duration-200 rounded
-          bg-primary hover:bg-secondary focus:bg-secondary"
-            role="button">Send</button
-          >
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 </section>

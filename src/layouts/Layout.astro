@@ -4,7 +4,6 @@ import Footer from "../components/sections/Footer.astro";
 
 import "../styles/index.css";
 import GoogleAnalytics from "../components/GoogleAnalytics.astro";
-import logo from "../assets/anton_zalialdinov_200.png";
 import { imagealt, sitename } from "../constants";
 import { getJsonMeta } from "../utils";
 
@@ -17,6 +16,7 @@ export interface Props {
 
 const { title, description, type } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('images/anton_zalialdinov_200.png', Astro.site);
 ---
 
 <!doctype html>
@@ -31,7 +31,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:image:width" content="200" />
     <meta property="og:image:height" content="200" />
     <meta property="og:image:alt" content={imagealt} />
-    <meta property="og:image" content={logo.src} />
+    <meta property="og:image" content={ogImage} />
     <meta property="og:title" content={title} />
     <meta property="og:locale" content="en_US" />
     <meta property="og:description" content={description} />

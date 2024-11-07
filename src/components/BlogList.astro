@@ -5,8 +5,8 @@ import BlogItem from './BlogItem.astro';
 const { blogs } = Astro.props;
 ---
 
-<section class="py-12 bg-background">
-  <div class="container mx-auto px-4 max-w-4xl">
+<section class="py-16 bg-background">
+  <div class="container mx-auto px-6">
     <h1 class="text-center text-3xl mb-10">Recent posts</h1>
     <ul class="space-y-6">
       {blogs.map((blog: Blog) => (
