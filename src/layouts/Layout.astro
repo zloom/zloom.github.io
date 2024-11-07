@@ -12,11 +12,26 @@ export interface Props {
   description: string;
   type: "article" | "website";
   dateModified?: string;
+  image?: string;
 }
 
-const { title, description, type } = Astro.props;
+const defaultImage = {
+  alt: imagealt,
+  height: "200",
+  width: "200",
+  image: new URL("images/anton_zalialdinov_200.png", Astro.site),
+};
+
+const { title, description, type, image } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL('images/anton_zalialdinov_200.png', Astro.site);
+const ogImage = image
+  ? {
+      alt: "Logo",
+      height: "150",
+      width: "500",
+      image: new URL(image, Astro.site),
+    }
+  : defaultImage;
 ---
 
 <!doctype html>
@@ -28,10 +43,10 @@ const ogImage = new URL('images/anton_zalialdinov_200.png', Astro.site);
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonicalURL} />
-    <meta property="og:image:width" content="200" />
-    <meta property="og:image:height" content="200" />
-    <meta property="og:image:alt" content={imagealt} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content={ogImage.width} />
+    <meta property="og:image:height" content={ogImage.height} />
+    <meta property="og:image:alt" content={ogImage.alt} />
+    <meta property="og:image" content={ogImage.image} />
     <meta property="og:title" content={title} />
     <meta property="og:locale" content="en_US" />
     <meta property="og:description" content={description} />
@@ -53,7 +68,7 @@ const ogImage = new URL('images/anton_zalialdinov_200.png', Astro.site);
   </head>
   <body
     class="h-full overflow-x-hidden bg-default text-default text-base selection:bg-secondary selection:text-white"
-  >    
+  >
     <Header />
     <section class="min-h-screen">
       <slot />
