@@ -6,7 +6,9 @@
   <div class="container mx-auto px-6">
     <div class="flex flex-col lg:flex-row lg:space-x-12 px-7">
       <div class="lg:w-1/2 flex flex-col items-start mb-12 lg:mb-0">
-        <h2 class="text-4xl font-extrabold text-center mb-12">Technical Consultation</h2>
+        <h2 class="text-4xl font-extrabold text-center mb-12">
+          Technical Consultation
+        </h2>
         <p class="mb-6 text-lg font-normal">
           I’d be glad to schedule a brief meeting to discuss your technical
           needs and objectives. Whether you’re looking to overcome complex
@@ -17,6 +19,7 @@
         </p>
         <div class="mt-10 sm:space-x-8 flex flex-col justify-end grow">
           <a
+            id="schedule-call"
             href=`https://cal.com/anton-zalialdinov-h7y1sx/30min`
             title="Meet"
             class="plausible-event-name=Schedule+call inline-flex items-center justify-center px-10 py-4 text-base text-white
@@ -31,11 +34,14 @@
       <div class="lg:w-1/2 mb-12 lg:mb-0 flex flex-col items-start">
         <h2 class="text-4xl font-extrabold text-center mb-12">Get in Touch</h2>
         <p class="mb-6 text-lg font-normal">
-          If you have any questions or would like more information, feel free to reach out. You can email me at <a
+          If you have any questions or would like more information, feel free to
+          reach out. You can email me at <a
+            id="send-email"
             href="mailto: anton.zalialdinov@gmail.com"
             class="plausible-event-name=Send+email font-medium text-primary pt-2"
             >anton.zalialdinov@gmail.com</a
-          > or send a message using the form below. I personally review each message and will be happy to provide support or discuss your project.
+          > or send a message using the form below. I personally review each message
+          and will be happy to provide support or discuss your project.
         </p>
         <form
           action="https://api.web3forms.com/submit"
@@ -97,13 +103,14 @@
               >Message</label
             >
           </div>
-            <button
-              type="submit"
-              class="inline-flex items-center justify-center px-10 py-4 text-base text-white
+          <button
+            id="send-message"
+            type="submit"
+            class="inline-flex items-center justify-center px-10 py-4 text-base text-white
             font-semibold transition-all duration-200 rounded
             bg-primary hover:bg-secondary focus:bg-secondary"
-              role="button">Send message</button
-            >
+            role="button">Send message</button
+          >
         </form>
       </div>
     </div>
