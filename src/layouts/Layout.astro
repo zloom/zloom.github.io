@@ -3,7 +3,6 @@ import Header from "../components/sections/Header.astro";
 import Footer from "../components/sections/Footer.astro";
 
 import "../styles/index.css";
-import GoogleAnalytics from "../components/GoogleAnalytics.astro";
 import { imagealt, sitename } from "../constants";
 import { getJsonMeta } from "../utils";
 
@@ -35,6 +34,15 @@ const ogImage = image
 ---
 
 <!doctype html>
+<!-- Google Tag Manager (noscript) -->
+<noscript
+  ><iframe
+    src="https://www.googletagmanager.com/ns.html?id=GTM-T4MMNLM4"
+    height="0"
+    width="0"
+    style="display:none;visibility:hidden"></iframe></noscript
+>
+<!-- End Google Tag Manager (noscript) -->
 <html lang="en" class="h-full dark" data-theme="dark">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -53,7 +61,10 @@ const ogImage = image
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content={sitename} />
     <meta property="og:type" content={type} />
-    <meta name="google-site-verification" content="lH7Jr4a8ttLmbgkTAUmtqWX3fuuIFJwpegsNMNTzzjM" />
+    <meta
+      name="google-site-verification"
+      content="lH7Jr4a8ttLmbgkTAUmtqWX3fuuIFJwpegsNMNTzzjM"
+    />
     <link rel="icon" href="/favicon.ico" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <title>{title}</title>
@@ -61,7 +72,18 @@ const ogImage = image
       defer
       data-domain="zloom.org"
       src="https://plausible.io/js/script.tagged-events.js"></script>
-    <GoogleAnalytics id="G-C4F267XKY9" />
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0], j: any = d.createElement(s), dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-T4MMNLM4");
+    </script>
+    <!-- End Google Tag Manager -->
     <script
       type="application/ld+json"
       set:html={JSON.stringify(getJsonMeta(Astro.props, canonicalURL))}
